@@ -1,0 +1,34 @@
+data:
+  tokenizer_path: "./models/tokenizer-clean.json"
+  train_path: "./corpus_split/train_babylm.txt"  # BabyLM merged training set
+  eval_path: "./corpus_split/val_babylm.txt"    # BabyLM validation set
+  seq_length: 128
+  eval_samples: 8192
+
+model:
+  type: "GPT2"
+  name: "GPT2-Large-BabyLM"
+  hidden_size: 1280  # GPT-2 Large hidden size
+  n_layer: 36        # GPT-2 Large number of layers
+  n_head: 20         # GPT-2 Large number of attention heads
+  use_pretrained: true  # Use pre-trained weights
+  pretrained_model: "gpt2-large"  # Pre-trained model name
+  # LoRA/QLoRA configuration (optional, for reducing GPU memory usage)
+  use_lora: false     # Use LoRA (parameter-efficient fine-tuning)
+  use_qlora: false    # Use QLoRA (4-bit quantization + LoRA, more memory efficient)
+  lora_r: 16          # LoRA rank
+  lora_alpha: 32      # LoRA alpha
+  lora_dropout: 0.05  # LoRA dropout
+  lora_target_modules: ["c_attn", "c_proj", "c_fc"]  # GPT-2 module names
+
+training:
+  lr: 2.5e-4
+  batch_size: 128
+  num_epochs: 4
+  gradient_accumulation_steps: 16
+  warmup_steps: 300
+  fp16: True
+
+logging: 
+  output_dir: "./models/"
+

@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+babylm/
+venv/
+env/
+
+# Model checkpoints and large files
+models/
+wandb/
+cache/
+train_10M/
+corpus_split/
+self_tokenizer_models/
+
+# Large ML files
+*.pt
+*.pth
+*.bin
+*.ckpt
+
+# Data
+*.zip
+*.tar
+*.gz

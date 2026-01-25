@@ -7,24 +7,24 @@ model:
   use_pretrained: true
   pretrained_model: "gpt2-large"
   
-  # === LoRA 配置  ===
+  # === LoRA Configuration ===
   use_lora: true
   use_qlora: false
-  lora_r: 32              # 建议设大一点 (64 or 128) 以容纳新知识
-  lora_alpha: 64         # 通常是 rank * 2
+  lora_r: 8              # Suggest setting larger (64 or 128) to accommodate new knowledge
+  lora_alpha: 16         # Usually rank * 2
   lora_dropout: 0.1
   lora_target_modules: ["c_attn", "c_proj", "c_fc"]
   
-  # 解冻 Embedding 层
-  # wte = Word Token Embeddings, lm_head = 输出层
-  # 在 PEFT 中，放入 modules_to_save 会自动解冻并训练这些层
+  # Unfreeze Embedding layer
+  # wte = Word Token Embeddings, lm_head = Output layer
+  # In PEFT, putting into modules_to_save will automatically unfreeze and train these layers
   modules_to_save: ["wte", "lm_head"] 
 
 training:
-  lr: 2.5e-4              # LoRA 部分的正常学习率
-  embedding_lr: 2.5e-5    # Embedding 层学习率 (通常设为 lr 的 1/10)
+  lr: 2.5e-4              # Normal learning rate for LoRA part
+  embedding_lr: 2.5e-5    # Embedding layer learning rate (usually set to 1/10 of lr)
   
-  batch_size: 64          # 确保 > gradient_accumulation_steps
+  batch_size: 64          # Ensure > gradient_accumulation_steps
   num_epochs: 10           
   gradient_accumulation_steps: 8  # per_device_bsz = 64//8 = 8
   warmup_steps: 300

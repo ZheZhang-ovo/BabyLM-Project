@@ -17,6 +17,7 @@ corpus_split_100M/
 self_tokenizer_models/
 train_100M/
 
+
 # Large ML files
 *.pt
 *.pth
@@ -31,3 +32,9 @@ train_100M/
 # Report
 weekly report/
 original parts/
+
+generate_plots.ipynb
+batch_upload_to_hf.py
+modeling_moep.py
+train_moep_student.py
+visual.py

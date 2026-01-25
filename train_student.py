@@ -5,7 +5,7 @@ from transformers import (
 )
 
 from pathlib import Path
-import argparse # 导入 argparse
+import argparse # Import argparse
 
 import torch
 import torch.nn as nn
@@ -16,7 +16,7 @@ from random import sample
 from custom_dataset import CustomDataset
 
 # ----------------------------------------------
-# 1. 解析命令行参数
+# 1. Parse command line arguments
 # ----------------------------------------------
 parser = argparse.ArgumentParser(description="Knowledge Distillation Training Script")
 parser.add_argument(
@@ -41,10 +41,10 @@ ALPHA = 0.5
 #############
 
 # Teacher model: Fine-tuned GPT-2 Large
-teacher_dir = "./models/GPT2-Large-BabyLM-100M-Merged" # Pretrained GPT-2 Large
+teacher_dir = "./models/GPT2-Large-BabyLM-100M-Unsloth-Merged" # Pretrained GPT-2 Large
 
 # Student model: GPT-2 Small (random initialization)
-MODEL_NAME = f'GPT2-LoRA-900M'
+MODEL_NAME = f'GPT2-Unsloth-900M'
 MODEL_OUTPUT = Path('../models') / MODEL_NAME
 EVAL_SAMPLES = 8192
 
@@ -239,16 +239,16 @@ trainer = DistillationTrainer(
     )
 
 # ----------------------------------------------
-# 2. 修改 trainer.train() 调用以支持恢复
+# 2. Modify trainer.train() call to support resuming
 # ----------------------------------------------
 resume_checkpoint = None
 if RESUME_PATH_INPUT:
-    # 构造完整的 Checkpoint 路径
+    # Construct complete Checkpoint path
     if Path(RESUME_PATH_INPUT).is_dir():
-        # 如果用户传入完整的路径，直接使用
+        # If user provides a complete path, use it directly
         resume_checkpoint = RESUME_PATH_INPUT
     elif (MODEL_OUTPUT / RESUME_PATH_INPUT).is_dir():
-        # 如果用户只传入文件夹名（如 'checkpoint-4960'），则构造完整路径
+        # If user only provides folder name (e.g., 'checkpoint-4960'), construct complete path
         resume_checkpoint = str(MODEL_OUTPUT / RESUME_PATH_INPUT)
     
     if resume_checkpoint:

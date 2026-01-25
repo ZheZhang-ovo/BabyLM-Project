@@ -67,12 +67,12 @@ def build_model(config, tokenizer):
                 lora_dropout=config['model'].get('lora_dropout', 0.05),
                 bias="none",
                 task_type=TaskType.CAUSAL_LM,
-                # 【修改点 1】在这里传入 modules_to_save，PEFT 会自动把它们解冻并变为可训练
+                # [Modification 1] Pass modules_to_save here, PEFT will automatically unfreeze them and make them trainable
                 modules_to_save=config['model'].get('modules_to_save', None) 
             )
             model = get_peft_model(model, lora_config)
             
-            # 打印可训练参数，你会发现参数量变大了（因为加了 wte），这是正常的
+            # Print trainable parameters. You will find that the parameter count increased (because wte was added), this is normal
             model.print_trainable_parameters()
         else:
             print("Using standard full fine-tuning (no LoRA).")
@@ -156,7 +156,7 @@ def main():
 
     model = build_model(config, tokenizer)
     
-    # 显式更新 config 这是一个好习惯
+    # Explicitly update config
     model.config.pad_token_id = tokenizer.pad_token_id
     
     output_dir = Path(config['logging']['output_dir']) / config['model']['name']
@@ -185,23 +185,23 @@ def main():
         torch_compile=config['training'].get('torch_compile', False),
     )
 
-    # === 【修改点 2】创建支持差异化学习率的优化器 ===
+    # === [Modification 2] Create optimizer supporting differential learning rates ===
     optimizer = None
     if config['model'].get('use_lora', False):
-        embedding_lr = float(config['training'].get('embedding_lr', 1e-5)) # 默认给个小值以防 yaml 没写
+        embedding_lr = float(config['training'].get('embedding_lr', 1e-5)) # Default to a small value in case it's not set in yaml
         base_lr = float(config['training']['lr'])
-        weight_decay = 0.01 # 默认 weight decay
+        weight_decay = 0.01 # Default weight decay
 
         print(f"Applying differential Learning Rates: Base={base_lr}, Embeddings={embedding_lr}")
 
-        # 区分参数组
-        # 1. Embeddings (wte, lm_head): 使用极小的 embedding_lr
-        # 2. 其他 (LoRA layers): 使用正常的 base_lr
+        # Separate parameter groups
+        # 1. Embeddings (wte, lm_head): Use very small embedding_lr
+        # 2. Others (LoRA layers): Use normal base_lr
         
-        # 过滤掉不需要梯度的参数
+        # Filter out parameters that do not require gradients
         trainable_params = [p for n, p in model.named_parameters() if p.requires_grad]
         
-        # 定义分组
+        # Define groups
         embedding_params = [p for n, p in model.named_parameters() if ("wte" in n or "lm_head" in n) and p.requires_grad]
         lora_params = [p for n, p in model.named_parameters() if ("wte" not in n and "lm_head" not in n) and p.requires_grad]
 
@@ -218,11 +218,11 @@ def main():
             }
         ]
         
-        # 创建 AdamW 优化器
+        # Create AdamW optimizer
         optimizer = torch.optim.AdamW(optimizer_grouped_parameters)
 
-    # 传入自定义的 optimizer
-    # 传入 (optimizer, None) 让 Trainer 自动帮我们创建 Scheduler
+    # Pass custom optimizer
+    # Pass (optimizer, None) to let Trainer automatically create Scheduler for us
     trainer = Trainer(
         model=model,
         args=training_args,

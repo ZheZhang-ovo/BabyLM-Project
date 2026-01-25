@@ -9,9 +9,9 @@ from _io import TextIOWrapper
 
 from transformers import AutoModelForCausalLM, AutoModelForMaskedLM, AutoModelForSeq2SeqLM
 import torch
-# [关键] 引入 MoEP 模型定义，以便 AutoModel 能识别
+# [Critical] Import MoEP model definition so AutoModel can recognize it
 import sys
-sys.path.append(".") # 确保能找到当前目录下的 modeling_moep.py
+sys.path.append(".") # Ensure modeling_moep.py in the current directory can be found
 from modeling_moep import MoEPForCausalLM, MoEPLMConfig
 
 from evaluation_pipeline.sentence_zero_shot.dataset import get_dataloader

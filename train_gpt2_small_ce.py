@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import Subset
 from random import sample
 
-# 确保你的目录下有这个文件，或者把它的类定义复制进来
+# Ensure this file exists in your directory, or copy its class definition here
 from custom_dataset import CustomDataset
 
 # ============================================================
@@ -16,9 +16,9 @@ from custom_dataset import CustomDataset
 # ============================================================
 LR = 2.5e-4
 BATCH_SIZE = 32
-SEQ_LENGTH = 512  # [关键] 必须是 512，适配后续 RL 和 Teacher
+SEQ_LENGTH = 512  # [Critical] Must be 512, adapt to subsequent RL and Teacher
 EVAL_SAMPLES = 8192
-EPOCHS = 10       # [关键] 跑满 10 个 Epoch
+EPOCHS = 10       # [Critical] Run full 10 Epochs
 
 PATH = Path("./")
 
@@ -28,19 +28,19 @@ PATH = Path("./")
 MODEL_NAME = "GPT2-Small-BabyLM-CE"
 MODEL_OUTPUT = PATH / "models" / MODEL_NAME
 
-# [关键] 确保这里指向你的 100M 数据文件夹
+# [Critical] Ensure this points to your 100M data folder
 BABYLM_TRAIN_PATH = "corpus_split_100M/train_babylm.txt"
 BABYLM_VAL_PATH = "corpus_split_100M/val_babylm.txt"
 
 # ============================================================
 # 1. Load Tokenizer (Modified)
 # ============================================================
-# [修改] 不再依赖本地 teacher 路径，直接用官方 GPT-2 tokenizer
-# 这样即使 Teacher 还没训好，这里也能跑
+# [Modified] No longer rely on local teacher path, use official GPT-2 tokenizer directly
+# This way, even if Teacher is not trained yet, this can run
 print("Loading standard GPT-2 tokenizer from Hugging Face...")
 tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
 
-# GPT-2 默认没有 pad token，必须手动指定，否则 batch 训练会报错
+# GPT-2 has no pad token by default, must specify manually, otherwise batch training will error
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 tokenizer.model_max_length = SEQ_LENGTH
@@ -78,7 +78,7 @@ data_collator = DataCollatorForLanguageModeling(
 # ============================================================
 student_config = GPT2Config(
     vocab_size=tokenizer.vocab_size,
-    n_positions=1024,  # 给足容量，大于 512 即可
+    n_positions=1024,  # Give enough capacity, greater than 512 is fine
     n_embd=768,        # GPT-2 Small
     n_layer=12,
     n_head=12,
@@ -99,14 +99,14 @@ training_args = TrainingArguments(
     save_strategy="epoch",
     eval_strategy="epoch",
     
-    # [关键修改] 设为 None，保留每一个 Epoch 的 checkpoint
-    # 这样你后续可以拿 Epoch 2 的模型去蒸馏，拿 Epoch 10 的做 Baseline
+    # [Critical Modification] Set to None, keep checkpoint for every Epoch
+    # This way you can use Epoch 2 model for distillation, and Epoch 10 for Baseline later
     save_total_limit=None, 
     
     # Training Hyperparameters
     num_train_epochs=EPOCHS,
     per_device_train_batch_size=BATCH_SIZE,
-    gradient_accumulation_steps=4,  # [关键] 32 * 4 = 128 effective batch size
+    gradient_accumulation_steps=4,  # [Critical] 32 * 4 = 128 effective batch size
     
     # Optimization
     learning_rate=LR,
@@ -117,7 +117,7 @@ training_args = TrainingArguments(
     # System & Logging
     logging_steps=20,
     fp16=True,
-    report_to=[],  # 可以填 ["wandb"] 如果你需要
+    report_to=[],  # Can fill ["wandb"] if you need
     
     # Load Best Model
     load_best_model_at_end=True,

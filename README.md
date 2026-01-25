@@ -92,8 +92,8 @@ BabyLM/
 ├── models/                    # Saved model checkpoints
 ├── eval/                      # Evaluation suite
 ├── interactive/               # RL & Chatbot components
-├── 7_train_teachers.py        # Teacher training script
-├── 8_train_student.py         # Student distillation script
+├── train_teachers.py        # Teacher training script
+├── train_student.py         # Student distillation script
 ├── train_gpt2_small_ce.py     # Baseline training
 ├── ppo.py                     # RL training entry point
 └── gpt2-large-babylm.yaml     # Configuration file

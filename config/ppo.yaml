@@ -9,7 +9,7 @@ hf_org : LMSeed # Save the model in my account
 # Trainer Settings
 num_epochs: 1
 batch_size: 32 # 128 # 360, 64
-token_limit: 1000 # 1000000 # 1000000
+token_limit: 1000000
 checkpoint_interval: 200000
 save_base_dir: models/
 

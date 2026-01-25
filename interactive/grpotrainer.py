@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
-from transformers import AutoTokenizer, AdamW
+from transformers import AutoTokenizer
+from torch.optim import AdamW
 from interactive.utils import LoggerFactory, PromptCompletionPair
 import os
 import csv

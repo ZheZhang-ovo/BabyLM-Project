@@ -1,0 +1,15 @@
+model_name: "LMSeed/GPT2-small-distilled-900M"
+log_with: "wandb"
+learning_rate: 5.0e-7  # DPO usually needs a very small LR
+
+hf_org : LMSeed # Save the model in my account
+save_base_dir: models/
+
+batch_size: 4         # Number of prompts
+num_generations: 2    # Generate 2 stories per prompt to create a (Winner, Loser) pair
+gradient_accumulation_steps: 2
+beta: 0.1             # DPO beta (controls deviation from reference model)
+token_limit: 1000000  # Word budget
+
+query_min_length: 1
+query_max_length: 8

@@ -40,7 +40,7 @@ def main(grpo_cfg, teacher_cfg):
         torch.cuda.manual_seed_all(seed)
 
     # 2. Config & Dataset
-    ppo_config = CustomPPOConfig(
+    grpo_config = CustomPPOConfig(
         model_name=grpo_cfg["model_name"],
         learning_rate=float(grpo_cfg.get("learning_rate", 1e-6)),
         log_with=grpo_cfg.get("log_with", None),
@@ -50,7 +50,7 @@ def main(grpo_cfg, teacher_cfg):
         output_max_length=grpo_cfg.get("output_max_length", 128),
     )
 
-    builder = TinyStoriesDatasetBuilder(ppo_config)
+    builder = TinyStoriesDatasetBuilder(grpo_config)
     dataset = DatasetCombiner([builder])
     dataset.set_token_limit(token_limit=grpo_cfg.get("token_limit", 10000000))
     dataset = dataset.load()
@@ -72,7 +72,7 @@ def main(grpo_cfg, teacher_cfg):
     trainer = CustomGRPOTrainer(
         num_generations=grpo_cfg.get("num_generations", 4),
         beta=grpo_cfg.get("beta", 0.04),
-        config=ppo_config, 
+        config=grpo_config, 
         model=model,
         ref_model=ref_model,
         tokenizer=tokenizer,
@@ -81,7 +81,7 @@ def main(grpo_cfg, teacher_cfg):
         word_budget=grpo_cfg.get("token_limit", 10000000),
         hf_org=grpo_cfg.get("hf_org", "llm-slice"),
         wandb_project="grpo-training",
-        push_to_hub=False,
+        push_to_hub=True,
     )
 
     # 6. Run
